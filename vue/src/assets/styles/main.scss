@@ -1,0 +1,17 @@
+$bg-color: #222;
+$tile-color: #00639b;
+$button-color: teal;
+
+body, html {
+  margin: 0;
+  padding: 0;
+  background-color: $bg-color;
+  font-family: sans-serif;
+}
+
+.main {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
