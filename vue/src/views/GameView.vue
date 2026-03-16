@@ -4,17 +4,17 @@
       <div class="game-area">
         <div class="game-header">
           <Timer :isWin="isWin" @time-update="updateTime" />
-          <div class="super-turn" :class="{ 'ready': superTurnReady }" @click="useSuperTurn">
-            <span v-if="superTurnReady">Супер ход - готов!</span>
-            <span v-else>Супер ход: {{ superTurnCooldown }}с</span>
-          </div>
+          <SuperTurn 
+            :isWin="isWin"
+            @activate-super-mode="activateSuperMode"
+          />
         </div>
 
         <GameBoard
           v-if="!isWin"
           :cells="cells"
           :size="size"
-          :blockedIndex="blockedIndex"
+          :blocked-index="blockedIndex"
           :super-mode="superMode"
           @move="moveTile"
           @super-move="superMoveTile"
@@ -30,6 +30,7 @@
 import GameBoard from '@/components/GameBoard.vue';
 import GameWin from '@/components/GameWin.vue';
 import Timer from '@/components/Timer.vue';
+import SuperTurn from '@/components/SuperTurn.vue';
 
 import classicMode from '@/modes/classicMode';
 import blockMode from '@/modes/blockMode';
@@ -38,7 +39,8 @@ export default {
   components: {
     GameBoard,
     GameWin,
-    Timer
+    Timer,
+    SuperTurn
   },
   
   data() {
@@ -49,22 +51,13 @@ export default {
       cells: [],
       isWin: false,
       elapsedTime: 0,
-      superTurnReady: true,
-      superTurnCooldown: 0,
       superMode: false,
-      cooldownTimer: null
     }
   },
   
   mounted() {
     this.createBoard()
     if(this.mode === 'block') this.setBlockedCell()
-  },
-  
-  beforeUnmount() {
-    if (this.cooldownTimer) {
-      clearInterval(this.cooldownTimer)
-    }
   },
   
   methods: {
@@ -91,28 +84,8 @@ export default {
       alert('Рекорд сохранен!')
     },
     
-    useSuperTurn() {
-      if (this.superTurnReady) {
-        this.superMode = true
-        this.superTurnReady = false
-        this.startCooldown()
-      }
-    },
-    
-    startCooldown() {
-
-      this.superTurnCooldown = 60
-
-      this.cooldownTimer = setInterval(() => {
-
-        this.superTurnCooldown--
-
-        if (this.superTurnCooldown <= 0) {
-          clearInterval(this.cooldownTimer)
-          this.superTurnReady = true
-          this.superTurnCooldown = 0
-        }
-      }, 1000)
+    activateSuperMode() {
+      this.superMode = true
     },
     
     superMoveTile(index) {
@@ -168,14 +141,6 @@ export default {
         }
       }
     }
-  },
-  
-  watch: {
-    isWin(newVal) {
-      if (newVal && this.cooldownTimer) {
-        clearInterval(this.cooldownTimer)
-      }
-    }
   }
 }
 </script>
@@ -199,27 +164,4 @@ export default {
   gap: 20px;
   align-items: center;
 }
-
-.super-turn {
-  font-size: 18px;
-  padding: 10px 20px;
-  border: 2px solid #ff9800;
-  border-radius: 8px;
-  background: white;
-  color: #ff9800;
-  font-weight: bold;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-
-.super-turn.ready {
-  background: #ff9800;
-  color: white;
-  border-color: #ff9800;
-}
-
-.super-turn.ready:hover {
-  background: #ff9800;
-}
-
 </style>

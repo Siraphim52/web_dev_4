@@ -15,7 +15,7 @@
 
     <div class="size-tabs">
       <button 
-        v-for="size in [3, 4, 5]" 
+        v-for="size in availableSizes" 
         :key="size"
         :class="{ active: currentSize === size }"
         @click="currentSize = size"
@@ -27,7 +27,7 @@
     <div class="records-list" v-if="filteredRecords.length">
       <div 
         v-for="(record, index) in filteredRecords" 
-        :key="index"
+        :key="record.id"
         class="record-item"
         :class="{ 'best': index === 0 }"
       >
@@ -53,6 +53,8 @@ export default {
   props: {
     records: {
       type: Array,
+      required: true,
+      default: () => []
     }
   },
   data() {
@@ -62,7 +64,8 @@ export default {
       modes: [
         { value: 'classic', label: 'Классический' },
         { value: 'block', label: 'С блоками' }
-      ]
+      ],
+      availableSizes: [3, 4, 5]
     }
   },
   computed: {
@@ -92,94 +95,95 @@ export default {
 }
 </script>
 
-<style scoped>
-    .leaderboard {
-        background: white;
-        border-radius: 10px;
-        padding: 15px;
-        min-width: 280px;
-        max-height: 400px;
-        overflow-y: auto;
-    }
+<style scoped lang="scss">
+.leaderboard {
+  background: white;
+  border-radius: 10px;
+  padding: 15px;
+  min-width: 280px;
+  max-height: 400px;
+  overflow-y: auto;
 
-    h3 {
-        margin: 0 0 15px 0;
-        color: #333;
-        text-align: center;
-    }
+  h3 {
+    margin: 0 0 15px 0;
+    color: #333;
+    text-align: center;
+  }
 
-    .mode-tabs, .size-tabs {
-        display: flex;
-        gap: 5px;
-        margin-bottom: 10px;
-    }
+  .mode-tabs,
+  .size-tabs {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 10px;
 
-    .mode-tabs button, .size-tabs button {
-        flex: 1;
-        padding: 8px;
-        border: none;
-        border-radius: 5px;
-        background: #f0f0f0;
-        cursor: pointer;
-        transition: all 0.2s;
-    }
+    button {
+      flex: 1;
+      padding: 8px;
+      border: none;
+      border-radius: 5px;
+      background: #f0f0f0;
+      cursor: pointer;
+      transition: all 0.2s;
 
-    .mode-tabs button.active, .size-tabs button.active {
+      &.active {
         background: #00639b;
         color: white;
+      }
     }
+  }
 
-    .records-list {
-        margin-top: 15px;
-    }
+  .records-list {
+    margin-top: 15px;
 
     .record-item {
-        display: flex;
-        align-items: center;
-        padding: 8px;
-        border-bottom: 1px solid #eee;
-        font-size: 14px;
-    }
+      display: flex;
+      align-items: center;
+      padding: 8px;
+      border-bottom: 1px solid #eee;
+      font-size: 14px;
 
-    .record-item.best {
+      &.best {
         background: #fff3cd;
         font-weight: bold;
-    }
+      }
 
-    .position {
+      .position {
         width: 30px;
         color: #666;
-    }
+      }
 
-    .time {
+      .time {
         flex: 1;
         font-family: monospace;
-    }
+      }
 
-    .date {
+      .date {
         color: #999;
         font-size: 12px;
+      }
     }
+  }
 
-    .no-records {
-        text-align: center;
-        color: #999;
-        padding: 20px;
-    }
+  .no-records {
+    text-align: center;
+    color: #999;
+    padding: 20px;
+  }
 
-    .clear-btn {
-        width: 100%;
-        margin-top: 15px;
-        padding: 8px;
-        border: none;
-        border-radius: 5px;
-        background: red;
-        color: white;
-        cursor: pointer;
-        transition: background 0.2s;
-    }
+  .clear-btn {
+    width: 100%;
+    margin-top: 15px;
+    padding: 8px;
+    border: none;
+    border-radius: 5px;
+    background: red;
+    color: white;
+    cursor: pointer;
+    transition: background 0.2s;
 
-    .clear-btn:hover {
-        background: #c82333;
+    &:hover {
+      background: #c82333;
     }
+  }
+}
 </style>

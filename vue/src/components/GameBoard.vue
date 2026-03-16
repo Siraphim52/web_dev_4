@@ -2,36 +2,58 @@
   <div class="board" :style="{ '--size': size }">
     <div
       class="cell"
-      v-for="(cell, index) in cells"
+      v-for="(item, index) in cellsWithClasses"
       :key="index"
-      :class="{ 
-        empty: cell === null, 
-        blocked: index === blockedIndex,
-        'super-mode': superMode && cell !== null && index !== blockedIndex
-      }"
+      :class="item.classes"
       @click="handleClick(index)"
     >
-      {{ cell }}
+      {{ item.value }}
     </div>
   </div>
 </template>
 
 <script>
 export default {
-
+  
   props: {
     cells: Array,
     size: Number,
     blockedIndex: Number,
     superMode: Boolean
   },
+
+  emits: ['move', 'super-move'],
+  
+  computed: {
+
+    cellsWithClasses() {
+      return this.cells.map((cell, index) => ({
+        value: cell,
+        classes: this.getCellClasses(index, cell)
+      }))
+    }
+
+  },
   
   methods: {
+
     handleClick(index) {
       if (this.superMode) {
         this.$emit('super-move', index)
       } else {
         this.$emit('move', index)
+      }
+    },
+    
+    getCellClasses(index, cell) {
+      const isEmpty = cell === null
+      const isBlocked = index === this.blockedIndex
+      const isSuperModeActive = this.superMode && !isEmpty && !isBlocked
+      
+      return {
+        empty: isEmpty,
+        blocked: isBlocked,
+        'super-mode': isSuperModeActive
       }
     }
   }
@@ -63,39 +85,30 @@ export default {
   background-color: #00639b;
   border-radius: 10px;
   cursor: pointer;
-  user-select: none;
-  transition: all 0.2s ease;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
 
-  &:hover:not(.empty):not(.blocked) {
-    background: #004c75;
-  }
-
-  &.super-mode:hover {
-    background: #ff9800;
-    transform: scale(1.05);
-    box-shadow: 0 0 10px rgba(255, 152, 0, 0.5);
-  }
-
-  &.empty {
-    background: transparent;
-    cursor: default;
-    
-    &:hover {
+    &.empty {
       background: transparent;
       cursor: default;
     }
-  }
 
-  &.blocked {
-    background: red;
-    cursor: not-allowed;
-    pointer-events: none;
-    opacity: 0.8;
-    
-    &:hover {
-      background: #cc0000;
-      transform: none;
+    &.blocked {
+      background: red;
+      cursor: not-allowed;
+      opacity: 0.8;
     }
-  }
+
+    &.super-mode:hover {
+      background: #ff9800;
+      box-shadow: 0 0 10px rgba(255, 152, 0, 0.5);
+    }
+
+    &:hover {
+      background: #004c75;
+    }
+
+    &.empty:hover {
+      background: $bg-color;
+    }
 }
 </style>
