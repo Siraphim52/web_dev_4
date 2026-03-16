@@ -1,6 +1,6 @@
 <template>
   <div class="timer">
-    {{ formattedTime }}
+    <span class="timer__display">{{ formattedTime }}</span>
   </div>
 </template>
 
@@ -59,7 +59,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .timer {
   font-size: 24px;
   padding: 10px 20px;

@@ -1,47 +1,53 @@
 <template>
   <div class="leaderboard">
-    <h3>Таблица рекордов</h3>
+    <h3 class="leaderboard__title">Таблица рекордов</h3>
     
-    <div class="mode-tabs">
+    <div class="leaderboard__tabs">
       <button 
         v-for="mode in modes" 
         :key="mode.value"
-        :class="{ active: currentMode === mode.value }"
+        class="leaderboard__tab"
+        :class="{ 'leaderboard__tab--active': currentMode === mode.value }"
         @click="currentMode = mode.value"
       >
         {{ mode.label }}
       </button>
     </div>
 
-    <div class="size-tabs">
+    <div class="leaderboard__size-tabs">
       <button 
         v-for="size in availableSizes" 
         :key="size"
-        :class="{ active: currentSize === size }"
+        class="leaderboard__size-tab"
+        :class="{ 'leaderboard__size-tab--active': currentSize === size }"
         @click="currentSize = size"
       >
         {{ size }}x{{ size }}
       </button>
     </div>
 
-    <div class="records-list" v-if="filteredRecords.length">
+    <div class="leaderboard__list" v-if="filteredRecords.length">
       <div 
         v-for="(record, index) in filteredRecords" 
         :key="record.id"
-        class="record-item"
-        :class="{ 'best': index === 0 }"
+        class="leaderboard__item"
+        :class="{ 'leaderboard__item--best': index === 0 }"
       >
-        <span class="position">{{ index + 1 }}</span>
-        <span class="time">{{ formatTime(record.time) }}</span>
-        <span class="date">{{ formatDate(record.date) }}</span>
+        <span class="leaderboard__position">{{ index + 1 }}</span>
+        <span class="leaderboard__time">{{ formatTime(record.time) }}</span>
+        <span class="leaderboard__date">{{ formatDate(record.date) }}</span>
       </div>
     </div>
 
-    <div v-else class="no-records">
+    <div v-else class="leaderboard__empty">
       Нет рекордов для этого режима и размера
     </div>
 
-    <button v-if="filteredRecords.length" @click="clearRecords" class="clear-btn">
+    <button 
+      v-if="filteredRecords.length" 
+      @click="clearRecords" 
+      class="leaderboard__clear-btn"
+    >
       Очистить рекорды
     </button>
   </div>
@@ -104,73 +110,74 @@ export default {
   max-height: 400px;
   overflow-y: auto;
 
-  h3 {
+  &__title {
     margin: 0 0 15px 0;
     color: #333;
     text-align: center;
   }
 
-  .mode-tabs,
-  .size-tabs {
+  &__tabs,
+  &__size-tabs {
     display: flex;
     gap: 5px;
     margin-bottom: 10px;
+  }
 
-    button {
-      flex: 1;
-      padding: 8px;
-      border: none;
-      border-radius: 5px;
-      background: #f0f0f0;
-      cursor: pointer;
-      transition: all 0.2s;
+  &__tab,
+  &__size-tab {
+    flex: 1;
+    padding: 8px;
+    border: none;
+    border-radius: 5px;
+    background: #f0f0f0;
+    cursor: pointer;
+    transition: all 0.2s;
 
-      &.active {
-        background: #00639b;
-        color: white;
-      }
+    &--active {
+      background: #00639b;
+      color: white;
     }
   }
 
-  .records-list {
+  &__list {
     margin-top: 15px;
+  }
 
-    .record-item {
-      display: flex;
-      align-items: center;
-      padding: 8px;
-      border-bottom: 1px solid #eee;
-      font-size: 14px;
+  &__item {
+    display: flex;
+    align-items: center;
+    padding: 8px;
+    border-bottom: 1px solid #eee;
+    font-size: 14px;
 
-      &.best {
-        background: #fff3cd;
-        font-weight: bold;
-      }
-
-      .position {
-        width: 30px;
-        color: #666;
-      }
-
-      .time {
-        flex: 1;
-        font-family: monospace;
-      }
-
-      .date {
-        color: #999;
-        font-size: 12px;
-      }
+    &--best {
+      background: #fff3cd;
+      font-weight: bold;
     }
   }
 
-  .no-records {
+  &__position {
+    width: 30px;
+    color: #666;
+  }
+
+  &__time {
+    flex: 1;
+    font-family: monospace;
+  }
+
+  &__date {
+    color: #999;
+    font-size: 12px;
+  }
+
+  &__empty {
     text-align: center;
     color: #999;
     padding: 20px;
   }
 
-  .clear-btn {
+  &__clear-btn {
     width: 100%;
     margin-top: 15px;
     padding: 8px;

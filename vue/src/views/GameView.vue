@@ -1,8 +1,8 @@
 <template>
   <div class="main">
-    <div class="game-layout">
-      <div class="game-area">
-        <div class="game-header">
+    <div class="game__layout">
+      <div class="game__area">
+        <div class="game__header">
           <Timer :isWin="isWin" @time-update="updateTime" />
           <SuperTurn 
             :isWin="isWin"
@@ -145,23 +145,26 @@ export default {
 }
 </script>
 
-<style scoped>
-.game-layout {
-  display: flex;
-  justify-content: center;
-  padding: 20px;
-}
+<style scoped lang="scss">
+.game {
 
-.game-area {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
-}
+  &__layout {
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+  }
 
-.game-header {
-  display: flex;
-  gap: 20px;
-  align-items: center;
+  &__area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+
+  &__header {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+  }
 }
 </style>

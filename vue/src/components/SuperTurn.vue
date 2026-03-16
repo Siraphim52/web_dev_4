@@ -1,11 +1,11 @@
 <template>
   <div 
     class="super-turn" 
-    :class="{ 'ready': isReady }" 
+    :class="{ 'super-turn--ready': isReady }" 
     @click="useSuperTurn"
   >
-    <span v-if="isReady">Супер ход - готов!</span>
-    <span v-else>Супер ход: {{ cooldown }}с</span>
+    <span v-if="isReady" class="super-turn__text">Супер ход - готов!</span>
+    <span v-else class="super-turn__cooldown">Супер ход: {{ cooldown }}с</span>
   </div>
 </template>
 
@@ -82,14 +82,14 @@ export default {
   cursor: pointer;
   transition: all 0.3s;
 
-    &.ready {
-        background: #ff9800;
-        color: white;
-        border-color: #ff9800;
-    }
+  &--ready {
+    background: #ff9800;
+    color: white;
+    border-color: #ff9800;
 
-    &.ready:hover {
-        background: #ff9800;
+    &:hover {
+      background: #ff9800;
     }
+  }
 }
 </style>
