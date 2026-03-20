@@ -3,10 +3,15 @@
     <div class="game__layout">
       <div class="game__area">
         <div class="game__header">
-          <Timer :isWin="isWin" @time-update="updateTime" />
+          <Timer 
+            v-if="!isWin"
+            :isWin="isWin" 
+            @time-update="(time) => updateTime(time)" 
+          />
           <SuperTurn 
+            v-if="!isWin"
             :isWin="isWin"
-            @activate-super-mode="activateSuperMode"
+            @activate-super-mode="activateSuperMode()"
           />
         </div>
 
@@ -16,11 +21,15 @@
           :size="size"
           :blocked-index="blockedIndex"
           :super-mode="superMode"
-          @move="moveTile"
-          @super-move="superMoveTile"
+          @move="(index) => moveTile(index)"
+          @super-move="(index) => superMoveTile(index)"
         />
 
-        <GameWin v-else @save-record="saveRecord" :time="elapsedTime" />
+        <GameWin 
+          v-else 
+          @save-record="() => saveRecord()" 
+          :time="elapsedTime" 
+        />
       </div>
     </div>
   </div>
@@ -33,7 +42,6 @@ import Timer from '@/components/Timer.vue';
 import SuperTurn from '@/components/SuperTurn.vue';
 
 import classicMode from '@/modes/classicMode';
-import blockMode from '@/modes/blockMode';
 
 export default {
   components: {
@@ -57,12 +65,14 @@ export default {
   
   mounted() {
     this.createBoard()
-    if(this.mode === 'block') this.setBlockedCell()
+    
+    if(this.mode === 'block') {
+      this.blockedIndex = classicMode.checkNewRandomDirection.call(this, this.cells.indexOf(null))
+    }
   },
   
   methods: {
     ...classicMode,
-    ...blockMode,
     
     updateTime(time) {
       this.elapsedTime = time
@@ -131,7 +141,9 @@ export default {
             this.cells[newIndex] = this.cells[index]
             this.cells[index] = null
 
-            if(this.mode === 'block') this.setBlockedCell()
+            if(this.mode === 'block') {
+              this.blockedIndex = classicMode.checkNewRandomDirection.call(this, this.cells.indexOf(null))
+            }
 
             if (this.checkWin()) {
               this.isWin = true

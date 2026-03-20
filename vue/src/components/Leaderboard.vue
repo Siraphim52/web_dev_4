@@ -45,7 +45,7 @@
 
     <button 
       v-if="filteredRecords.length" 
-      @click="clearRecords" 
+      @click="clearRecords()" 
       class="leaderboard__clear-btn"
     >
       Очистить рекорды

@@ -2,7 +2,7 @@
   <div 
     class="super-turn" 
     :class="{ 'super-turn--ready': isReady }" 
-    @click="useSuperTurn"
+    @click="useSuperTurn()"
   >
     <span v-if="isReady" class="super-turn__text">Супер ход - готов!</span>
     <span v-else class="super-turn__cooldown">Супер ход: {{ cooldown }}с</span>

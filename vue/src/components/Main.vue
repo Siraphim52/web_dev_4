@@ -10,8 +10,8 @@
           min="3" 
           max="5" 
           class="game-settings__slider"
-          v-bind:value="size" 
-          @input="inputValue"
+          :value="size" 
+          @input="(event) => size = event.target.value"
         >
         <router-link :to="{ path: '/game', query: { size: size, mode: 'classic' } }" class="game-settings__link">
           <button class="game-settings__button">Классический режим</button>
@@ -23,7 +23,7 @@
       
       <Leaderboard 
         :records="records" 
-        @clear="clearAllRecords"
+        @clear="() => clearAllRecords()"
       />
     </div>
   </div>
@@ -47,9 +47,6 @@ export default {
     this.loadRecords()
   },
   methods: {
-    inputValue(event) {
-      this.size = event.target.value;
-    },
     loadRecords() {
       const saved = localStorage.getItem('puzzleRecords')
       this.records = saved ? JSON.parse(saved) : []
@@ -62,7 +59,7 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 * {
   margin: 0;
   padding: 0;
