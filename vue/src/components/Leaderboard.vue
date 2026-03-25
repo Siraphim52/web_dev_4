@@ -8,7 +8,7 @@
         :key="mode.value"
         class="leaderboard__tab"
         :class="{ 'leaderboard__tab--active': currentMode === mode.value }"
-        @click="currentMode = mode.value"
+        @click="() => currentMode = mode.value"
       >
         {{ mode.label }}
       </button>
@@ -20,7 +20,7 @@
         :key="size"
         class="leaderboard__size-tab"
         :class="{ 'leaderboard__size-tab--active': currentSize === size }"
-        @click="currentSize = size"
+        @click="() => currentSize = size"
       >
         {{ size }}x{{ size }}
       </button>
@@ -45,7 +45,7 @@
 
     <button 
       v-if="filteredRecords.length" 
-      @click="clearRecords()" 
+      @click="() => clearRecords()" 
       class="leaderboard__clear-btn"
     >
       Очистить рекорды
@@ -54,15 +54,11 @@
 </template>
 
 <script>
+import { mapGetters, mapActions } from 'vuex'
+
 export default {
   name: 'Leaderboard',
-  props: {
-    records: {
-      type: Array,
-      required: true,
-      default: () => []
-    }
-  },
+  
   data() {
     return {
       currentMode: 'classic',
@@ -74,27 +70,36 @@ export default {
       availableSizes: [3, 4, 5]
     }
   },
+  
   computed: {
+    ...mapGetters('records', ['getFilteredRecords']),
+    
     filteredRecords() {
-      return this.records
-        .filter(r => r.mode === this.currentMode && r.size === this.currentSize)
-        .sort((a, b) => a.time - b.time)
-        .slice(0, 10)
+      return this.getFilteredRecords(this.currentMode, this.currentSize)
     }
   },
+  
+  mounted() {
+    this.loadRecords()
+  },
+  
   methods: {
+    ...mapActions('records', ['loadRecords', 'clearAllRecords']),
+    
     formatTime(seconds) {
       const mins = Math.floor(seconds / 60)
       const secs = Math.floor(seconds % 60)
       const ms = Math.floor((seconds % 1) * 100)
       return `${mins}:${secs.toString().padStart(2, '0')}.${ms.toString().padStart(2, '0')}`
     },
+    
     formatDate(timestamp) {
       return new Date(timestamp).toLocaleDateString()
     },
+    
     clearRecords() {
       if (confirm('Очистить все рекорды?')) {
-        this.$emit('clear')
+        this.clearAllRecords()
       }
     }
   }

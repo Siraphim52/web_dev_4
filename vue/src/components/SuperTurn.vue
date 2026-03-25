@@ -2,7 +2,7 @@
   <div 
     class="super-turn" 
     :class="{ 'super-turn--ready': isReady }" 
-    @click="useSuperTurn()"
+    @click="useSuperTurn"
   >
     <span v-if="isReady" class="super-turn__text">Супер ход - готов!</span>
     <span v-else class="super-turn__cooldown">Супер ход: {{ cooldown }}с</span>
@@ -32,39 +32,49 @@ export default {
   
   watch: {
     isWin(newVal) {
-      if (newVal && this.cooldownTimer) {
-        clearInterval(this.cooldownTimer)
+      if (newVal) {
+        this.resetSuperTurn()
       }
     }
   },
   
   beforeUnmount() {
-    if (this.cooldownTimer) {
-      clearInterval(this.cooldownTimer)
-    }
+    this.clearCooldown()
   },
   
   methods: {
     useSuperTurn() {
-      if (this.isReady) {
-        this.$emit('activate-super-mode')
-        this.isReady = false
-        this.startCooldown()
-      }
+      if (!this.isReady) return
+
+      this.$emit('activate-super-mode')
+      this.isReady = false
+      this.startCooldown()
     },
-    
+
     startCooldown() {
+      this.clearCooldown()
       this.cooldown = 60
 
       this.cooldownTimer = setInterval(() => {
         this.cooldown--
 
         if (this.cooldown <= 0) {
-          clearInterval(this.cooldownTimer)
-          this.isReady = true
-          this.cooldown = 0
+          this.resetSuperTurn()
         }
       }, 1000)
+    },
+
+    clearCooldown() {
+      if (this.cooldownTimer) {
+        clearInterval(this.cooldownTimer)
+        this.cooldownTimer = null
+      }
+    },
+
+    resetSuperTurn() {
+      this.clearCooldown()
+      this.cooldown = 0
+      this.isReady = true
     }
   }
 }

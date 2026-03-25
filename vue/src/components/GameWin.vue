@@ -3,7 +3,7 @@
     <h2 class="win__title">Вы собрали пятнашки!</h2>
     <p class="win__time">Время: {{ formatTime(time) }}</p>
     
-    <button @click="saveAndContinue()" class="win__button win__button--save">
+    <button @click="() => saveAndContinue()" class="win__button win__button--save">
       Сохранить рекорд
     </button>
 

@@ -4,56 +4,52 @@
     <div class="main__content">
       <div class="game-settings">
         <h1 class="game-settings__title">Пятнашки</h1>
-        <h3 class="game-settings__size-label">Размер: {{ size }} x {{ size }}</h3>
+        <h3 class="game-settings__size-label">Размер: {{ currentSize }} x {{ currentSize }}</h3>
         <input 
           type="range" 
           min="3" 
           max="5" 
           class="game-settings__slider"
-          :value="size" 
-          @input="(event) => size = event.target.value"
+          :value="currentSize" 
+          @input="(event) => updateSize(event.target.value)"
         >
-        <router-link :to="{ path: '/game', query: { size: size, mode: 'classic' } }" class="game-settings__link">
+        <router-link :to="{ path: '/game', query: { size: currentSize, mode: 'classic' } }" class="game-settings__link">
           <button class="game-settings__button">Классический режим</button>
         </router-link>
-        <router-link :to="{ path: '/game', query: { size: size, mode: 'block' } }" class="game-settings__link">
+        <router-link :to="{ path: '/game', query: { size: currentSize, mode: 'block' } }" class="game-settings__link">
           <button class="game-settings__button">Режим с блоками</button>
         </router-link>
       </div>
       
-      <Leaderboard 
-        :records="records" 
-        @clear="() => clearAllRecords()"
-      />
+      <Leaderboard />
     </div>
   </div>
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 import Leaderboard from '@/components/Leaderboard.vue'
 
 export default {
   components: {
     Leaderboard
   },
+  
   data() {
     return {
-      size: this.$route.query.size || 4,
-      mode: this.$route.query.mode || "classic",
-      records: []
-    }      
+      currentSize: 4
+    }
   },
+  
   mounted() {
     this.loadRecords()
   },
+  
   methods: {
-    loadRecords() {
-      const saved = localStorage.getItem('puzzleRecords')
-      this.records = saved ? JSON.parse(saved) : []
-    },
-    clearAllRecords() {
-      localStorage.removeItem('puzzleRecords')
-      this.records = []
+    ...mapActions('records', ['loadRecords']),
+    
+    updateSize(size) {
+      this.currentSize = Number(size)
     }
   }
 }

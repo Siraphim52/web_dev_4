@@ -11,7 +11,7 @@
           <SuperTurn 
             v-if="!isWin"
             :isWin="isWin"
-            @activate-super-mode="activateSuperMode()"
+            @activate-super-mode="() => activateSuperMode()"
           />
         </div>
 
@@ -36,12 +36,11 @@
 </template>
 
 <script>
-import GameBoard from '@/components/GameBoard.vue';
-import GameWin from '@/components/GameWin.vue';
-import Timer from '@/components/Timer.vue';
-import SuperTurn from '@/components/SuperTurn.vue';
-
-import classicMode from '@/modes/classicMode';
+import { mapGetters, mapActions } from 'vuex'
+import GameBoard from '@/components/GameBoard.vue'
+import GameWin from '@/components/GameWin.vue'
+import Timer from '@/components/Timer.vue'
+import SuperTurn from '@/components/SuperTurn.vue'
 
 export default {
   components: {
@@ -53,105 +52,50 @@ export default {
   
   data() {
     return {
-      size: Number(this.$route.query.size) || 4,
-      mode: this.$route.query.mode || 'classic',
-      blockedIndex: null,
-      cells: [],
-      isWin: false,
-      elapsedTime: 0,
-      superMode: false,
+      sizeFromRoute: null,
+      modeFromRoute: null
     }
   },
   
-  mounted() {
-    this.createBoard()
+  computed: {
+    ...mapGetters('game', {
+      cells: 'getCells',
+      size: 'getSize',
+      blockedIndex: 'getBlockedIndex',
+      isWin: 'isWin',
+      elapsedTime: 'getElapsedTime',
+      superMode: 'isSuperMode'
+    })
+  },
+  
+  created() {
+    this.sizeFromRoute = Number(this.$route.query.size) || 4
+    this.modeFromRoute = this.$route.query.mode || 'classic'
     
-    if(this.mode === 'block') {
-      this.blockedIndex = classicMode.checkNewRandomDirection.call(this, this.cells.indexOf(null))
-    }
+    this.initializeGame({
+      size: this.sizeFromRoute,
+      mode: this.modeFromRoute
+    })
   },
   
   methods: {
-    ...classicMode,
+    ...mapActions('game', [
+      'initializeGame',
+      'updateTime',
+      'activateSuperMode',
+      'moveTile',
+      'superMoveTile'
+    ]),
+    ...mapActions('records', ['saveRecord']),
     
-    updateTime(time) {
-      this.elapsedTime = time
-    },
-
     saveRecord() {
-      const records = JSON.parse(localStorage.getItem('puzzleRecords') || '[]')
-      
-      const newRecord = {
-        id: Date.now(),
+      this.saveRecord({
         time: this.elapsedTime,
-        mode: this.mode,
-        size: this.size,
-        date: Date.now()
-      }
-
-      records.push(newRecord)
-      localStorage.setItem('puzzleRecords', JSON.stringify(records))
+        mode: this.modeFromRoute,
+        size: this.sizeFromRoute
+      })
       alert('Рекорд сохранен!')
-    },
-    
-    activateSuperMode() {
-      this.superMode = true
-    },
-    
-    superMoveTile(index) {
-      const emptyIndex = this.cells.findIndex(cell => cell === null)
-      
-      if (emptyIndex !== -1 && index !== emptyIndex) {
-        
-        this.cells[emptyIndex] = this.cells[index]
-        this.cells[index] = null
-
-        if(this.mode === 'block') this.setBlockedCell()
-
-        if (this.checkWin()) {
-          this.isWin = true
-        }
-      }
-      
-      this.superMode = false
-    },
-    
-    moveTile(index) {
-      const row = Math.floor(index / this.size)
-      const col = index % this.size
-
-      const directions = [
-        [0, 1],
-        [0, -1],
-        [1, 0],
-        [-1, 0]
-      ]
-
-      for (const [dx, dy] of directions) {
-        const newRow = row + dx
-        const newCol = col + dy
-
-        if (
-          newRow >= 0 && newRow < this.size &&
-          newCol >= 0 && newCol < this.size
-        ) {
-          const newIndex = newRow * this.size + newCol
-
-          if (this.cells[newIndex] === null) {
-            this.cells[newIndex] = this.cells[index]
-            this.cells[index] = null
-
-            if(this.mode === 'block') {
-              this.blockedIndex = classicMode.checkNewRandomDirection.call(this, this.cells.indexOf(null))
-            }
-
-            if (this.checkWin()) {
-              this.isWin = true
-            }
-            break
-          }
-        }
-      }
+      this.$router.push('/')
     }
   }
 }
@@ -159,7 +103,6 @@ export default {
 
 <style scoped lang="scss">
 .game {
-
   &__layout {
     display: flex;
     justify-content: center;

@@ -5,7 +5,7 @@
       v-for="(item, index) in cellsWithClasses"
       :key="index"
       :class="item.classes"
-      @click="handleClick(index)"
+      @click="() => handleClick(index)"
     >
       {{ item.value }}
     </div>
